@@ -81,9 +81,9 @@ filetree
 ├── player.py
 ├── initialize.py
 ├── /data/
-│  ├── /song/
-│  │  ├── song1.mp3
-│  │  └── song2.mp3
+│   └── /song/
+│       ├── song1.mp3
+│       └── song2.mp3
 ├── run.bat
 ├── timer_text.txt
 ├── player.ini
