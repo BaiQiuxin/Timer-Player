@@ -10,34 +10,34 @@ generates a player.ini with Song sections.
 import configparser
 from pathlib import Path
 
-FILE_PATH = "D:/Music"
+FILE_PATH = "./data/song"
 CONFIG_FILE_PATH = "./player.ini"
 DEFAULT_SONG_URL = "http://qjjlb.quanjian.com.cn/musicdl/"
 AUDIO_EXTENSIONS = {".mp3", ".wav", ".flac", ".ogg", ".m4a", ".aac", ".wma"}
 
 
 def scan_audio_files(directory: str) -> list[dict]:
-    """扫描目录下的音频文件，解析歌手和歌曲名"""
+    """Scan the given directory for audio files and extract song info."""
     audio_dir = Path(directory)
     if not audio_dir.is_dir():
-        print(f"错误：目录不存在 - {directory}")
+        print(f"Error：Directory does not exist - {directory}")
         return []
 
     songs = []
-    # 收集所有音频文件
+    # Collect audio files and their info
     for f in sorted(audio_dir.iterdir()):
         if f.suffix.lower() in AUDIO_EXTENSIONS:
-            # 文件名格式：歌手-歌曲名.扩展名
-            stem = f.stem  # 不含扩展名的文件名
+            # File name format: "Artist-SongTitle.ext"
+            stem = f.stem  # Get file name without extension
             if "-" in stem:
                 author, song_name = stem.split("-", 1)
                 author = author.strip()
                 song_name = song_name.strip()
             else:
-                author = "未知"
+                author = "Unknown Artist"
                 song_name = stem.strip()
 
-            # 查找同名 PNG 封面
+            # Search for cover image with the same name but .png extension
             cover_path = f.with_suffix(".png")
             cover = str(cover_path) if cover_path.is_file() else ""
 
@@ -48,15 +48,15 @@ def scan_audio_files(directory: str) -> list[dict]:
                 "song_url": DEFAULT_SONG_URL,
                 "cover_image": cover,
             })
-            print(f"  发现歌曲：{author} - {song_name}")
+            print(f"  Found song: {author} - {song_name}")
 
     return songs
 
 
 def write_config(songs: list[dict], config_path: str):
-    """将歌曲信息写入 player.ini"""
+    """Write song info to player.ini"""
     cfg = configparser.ConfigParser()
-    cfg.optionxform = str  # 保留键的大小写
+    cfg.optionxform = str  # Preserve case sensitivity for keys
 
     for i, song in enumerate(songs, start=1):
         section = f"Song #{i}"
@@ -71,18 +71,18 @@ def write_config(songs: list[dict], config_path: str):
     with open(config_path, "w", encoding="utf-8") as f:
         cfg.write(f)
 
-    print(f"已写入 {len(songs)} 首歌曲到 {config_path}")
+    print(f"Successfully written {len(songs)} songs to {config_path}")
 
 
 def main():
-    print(f"正在扫描目录：{FILE_PATH}")
+    print(f"Scanning directory: {FILE_PATH}")
     songs = scan_audio_files(FILE_PATH)
 
     if not songs:
-        print("未找到任何音频文件，将生成空配置。")
+        print("No audio files found, generating empty config.")
 
     write_config(songs, CONFIG_FILE_PATH)
-    print("完成！")
+    print("Done!")
 
 
 if __name__ == "__main__":

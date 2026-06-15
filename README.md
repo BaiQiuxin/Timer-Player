@@ -17,7 +17,7 @@ Timer and local music player
 
 <p align="center">
   <a href="https://github.com/BaiQiuxin/Timer-Player/">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="images/logo.png" alt="Logo" width="300" height="300">
   </a>
 
   <h3 align="center">Timer & Player</h3>
@@ -36,19 +36,17 @@ Timer and local music player
 
 </p>
 
-
 ## Table of Contents
 
 - [TPlayer](#tplayer)
   - [Table of Contents](#table-of-contents)
     - [Quick Start](#quick-start)
-        - [Environment](#environment)
-          - [**安装步骤**](#安装步骤)
+      - [Environment](#environment)
+      - [Install](#install)
     - [File Tree](#file-tree)
     - [Architecture](#architecture)
     - [Implement](#implement)
     - [Used Framework](#used-framework)
-    - [Contributors](#contributors)
       - [Join our community](#join-our-community)
     - [Version Control](#version-control)
     - [Author](#author)
@@ -57,15 +55,15 @@ Timer and local music player
 
 ### Quick Start
 
-##### Environment
+#### Environment
 
 1. Python 3.14
-2. PyQt6
+2. PyQt5
 
-###### **安装步骤**
+#### Install
 
 1. Clone the repo
-2. Run init.py and player.py
+2. Run `.\run.bat`
 
 ```sh
 git clone https://github.com/BaiQiuxin/Timer-Player.git
@@ -75,23 +73,24 @@ git clone https://github.com/BaiQiuxin/Timer-Player.git
 
 eg:
 
-```
+```sh
 
 filetree 
 ├── LICENSE
 ├── README.md
-├── /account/
-├── /bbs/
-├── /docs/
-│  ├── /rules/
-│  │  ├── backend.txt
-│  │  └── frontend.txt
-├── manage.py
-├── /oa/
-├── /static/
-├── /templates/
-├── useless.md
-└── /util/
+├── player.py
+├── initialize.py
+├── /data/
+│  ├── /song/
+│  │  ├── song1.mp3
+│  │  └── song2.mp3
+├── run.bat
+├── timer_text.txt
+├── player.ini
+├── .gitignore
+└── images
+    └── logo.png
+
 
 ```
 
@@ -109,22 +108,15 @@ filetree
 - [xxxxxxx](https://jquery.com)
 - [xxxxxxx](https://laravel.com)
 
-### Contributors
-
-请阅读**CONTRIBUTING.md** 查阅为该项目做出贡献的开发者。
-
 #### Join our community
 
 贡献使开源社区成为一个学习、激励和创造的绝佳场所。你所作的任何贡献都是**非常感谢**的。
-
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
-
 
 ### Version Control
 
@@ -134,7 +126,7 @@ filetree
 
 xxx@xxxx
 
-知乎:xxxx  &ensp; qq:xxxxxx    
+知乎:xxxx  &ensp; qq:xxxxxx
 
  *您也可以在贡献者名单中参看所有参与该项目的开发者。*
 
@@ -143,7 +135,6 @@ xxx@xxxx
 该项目签署了MIT 授权许可，详情请参阅 [LICENSE](https://github.com/BaiQiuxin/Timer-Player/blob/master/LICENSE.txt)
 
 ### Acknowledgments
-
 
 - [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
 - [Img Shields](https://shields.io)
@@ -166,6 +157,3 @@ xxx@xxxx
 [license-url]: https://github.com/BaiQiuxin/Timer-Player/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/shaojintian
-
-
-

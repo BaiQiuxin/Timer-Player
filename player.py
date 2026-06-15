@@ -202,6 +202,9 @@ class MusicPlayerWidget(QWidget):
         self._init_ui()
         self._load_current_song()
 
+        # 歌曲播放结束时自动播放下一曲
+        self._player.mediaStatusChanged.connect(self._on_media_status_changed)
+
     def _init_ui(self):
         # 专辑封面
         self.cover_label = QLabel()
@@ -227,14 +230,9 @@ class MusicPlayerWidget(QWidget):
         self.qr_label.setAlignment(Qt.AlignCenter)
         self.qr_label.setFixedSize(220, 220)
 
-        # 控制按钮
-        self.play_btn = QPushButton("▶ 播放")
-        self.play_btn.setFixedWidth(120)
-        self.play_btn.clicked.connect(self._toggle_playback)
-
+        # 按钮样式
         btn_font = QFont("Microsoft YaHei", 12)
-        self.play_btn.setFont(btn_font)
-        self.play_btn.setStyleSheet("""
+        btn_style = """
             QPushButton {
                 background-color: #4CAF50; color: white;
                 border: none; border-radius: 6px;
@@ -242,9 +240,46 @@ class MusicPlayerWidget(QWidget):
             }
             QPushButton:hover { background-color: #45a049; }
             QPushButton:pressed { background-color: #3d8b40; }
-        """)
+        """
+        nav_btn_style = """
+            QPushButton {
+                background-color: #2196F3; color: white;
+                border: none; border-radius: 6px;
+                padding: 8px 16px;
+                font-size: 16px;
+            }
+            QPushButton:hover { background-color: #1976D2; }
+            QPushButton:pressed { background-color: #1565C0; }
+        """
 
-        # 布局
+        # 上一曲按钮
+        self.prev_btn = QPushButton("⏮ 上一曲")
+        self.prev_btn.setFont(btn_font)
+        self.prev_btn.setStyleSheet(nav_btn_style)
+        self.prev_btn.clicked.connect(self._prev_song)
+
+        # 播放/暂停按钮
+        self.play_btn = QPushButton("▶ 播放")
+        self.play_btn.setFixedWidth(120)
+        self.play_btn.setFont(btn_font)
+        self.play_btn.setStyleSheet(btn_style)
+        self.play_btn.clicked.connect(self._toggle_playback)
+
+        # 下一曲按钮
+        self.next_btn = QPushButton("下一曲 ⏭")
+        self.next_btn.setFont(btn_font)
+        self.next_btn.setStyleSheet(nav_btn_style)
+        self.next_btn.clicked.connect(self._next_song)
+
+        # 按钮水平布局
+        btn_layout = QHBoxLayout()
+        btn_layout.setAlignment(Qt.AlignCenter)
+        btn_layout.setSpacing(16)
+        btn_layout.addWidget(self.prev_btn)
+        btn_layout.addWidget(self.play_btn)
+        btn_layout.addWidget(self.next_btn)
+
+        # 整体布局
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignCenter)
         layout.addStretch(1)
@@ -255,7 +290,7 @@ class MusicPlayerWidget(QWidget):
         layout.addSpacing(16)
         layout.addWidget(self.qr_label, alignment=Qt.AlignCenter)
         layout.addSpacing(8)
-        layout.addWidget(self.play_btn, alignment=Qt.AlignCenter)
+        layout.addLayout(btn_layout)
         layout.addStretch(2)
         self.setLayout(layout)
 
@@ -298,6 +333,31 @@ class MusicPlayerWidget(QWidget):
             self._player.play()
             self.play_btn.setText("⏸ 暂停")
 
+    def _prev_song(self):
+        """上一曲"""
+        if not self._songs:
+            return
+        self._current_index = (self._current_index - 1) % len(self._songs)
+        self._load_current_song()
+        # 如果正在播放则自动播放
+        if self._player.state() == QMediaPlayer.PlayingState:
+            self._player.play()
+
+    def _next_song(self):
+        """下一曲"""
+        if not self._songs:
+            return
+        self._current_index = (self._current_index + 1) % len(self._songs)
+        self._load_current_song()
+        # 如果正在播放则自动播放
+        if self._player.state() == QMediaPlayer.PlayingState:
+            self._player.play()
+
+    def _on_media_status_changed(self, status):
+        """歌曲播放结束自动播放下一曲（顺序播放）"""
+        if status == QMediaPlayer.EndOfMedia:
+            self._next_song()
+
     def set_songs(self, songs: List[dict]):
         """更新歌曲列表并重新加载"""
         self._songs = songs
@@ -329,20 +389,20 @@ class MainWindow(QMainWindow):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
 
-        # ── 左侧：音乐播放器 ──
-        left_widget = MusicPlayerWidget(self._config)
-        left_widget.setStyleSheet("background-color: #f5f5f5;")
-        main_layout.addWidget(left_widget, 6)  # 60%
-
-        # ── 右侧：计时器 ──
+        # ── 左侧：计时器 ──
         self.timer_widget = TimerWidget()
         self.timer_widget.setStyleSheet("background-color: #ffffff;")
         self.timer_widget.load_text(TIMER_TEXT_FILE)
         main_layout.addWidget(self.timer_widget, 4)  # 40%
 
+        # ── 右侧：音乐播放器 ──
+        self.player_widget = MusicPlayerWidget(self._config)
+        self.player_widget.setStyleSheet("background-color: #f5f5f5;")
+        main_layout.addWidget(self.player_widget, 6)  # 60%
+
         # 状态栏
         self.statusBar().showMessage(
-            "就绪  |  Ctrl+F 切换计时  |  Ctrl+R 重置计时"
+            "就绪  |  Ctrl+F 切换计时  |  Ctrl+R 重置计时  |  ← 上一曲  |  → 下一曲"
         )
 
     def _center(self):
@@ -365,6 +425,18 @@ class MainWindow(QMainWindow):
         reset_action.setShortcut("Ctrl+R")
         reset_action.triggered.connect(self.timer_widget.reset)
         self.addAction(reset_action)
+
+        # ←: 上一曲
+        prev_action = QAction("上一曲", self)
+        prev_action.setShortcut(Qt.Key_Left)
+        prev_action.triggered.connect(self.player_widget._prev_song)
+        self.addAction(prev_action)
+
+        # →: 下一曲
+        next_action = QAction("下一曲", self)
+        next_action.setShortcut(Qt.Key_Right)
+        next_action.triggered.connect(self.player_widget._next_song)
+        self.addAction(next_action)
 
     def closeEvent(self, event):
         """关闭确认"""
