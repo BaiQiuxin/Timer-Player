@@ -1,7 +1,7 @@
 
-# TPlayer
+# Timer & Player
 
-Timer and local music player
+Timer and local music(*.flac) player
 
 <!-- PROJECT SHIELDS -->
 
@@ -37,12 +37,13 @@ Timer and local music player
 
 ## Table of Contents
 
-- [TPlayer](#tplayer)
+- [Timer \& Player](#timer--player)
   - [Table of Contents](#table-of-contents)
     - [Quick Start](#quick-start)
       - [Environment](#environment)
       - [Install](#install)
     - [File Tree](#file-tree)
+    - [Implement](#implement)
       - [Join our community](#join-our-community)
     - [Version Control](#version-control)
     - [Author](#author)
@@ -58,13 +59,13 @@ Timer and local music player
 
 #### Install
 
-1. Clone the repo
+1. Fork and clone the repo
 2. Run `pip install -r requirements.txt`.
 3. Put your audio files `*.flac` in `./data/song`.
 4. Run `.\run.bat` or run `python initialize.py` before running `python player.py`
 
 ```sh
-git clone https://github.com/BaiQiuxin/Timer-Player.git
+git clone https://github.com/Your-Name/Timer-Player.git
 ```
 
 ### File Tree
@@ -85,18 +86,19 @@ MusicPlayer
 ├─ images
 │  └─ logo.png
 └─ data
-   ├─ thumbnail
-   │  ├─ song1.png
-   │  └─ song2.png
    └─ song
       ├─ song1.flac
       └─ song2.flac
 
 ```
 
+### Implement
+
+`initialize.py` read .flac documents in `./data/song` and extract information from them.The extracted covers are stored in `./data/album` in .png form.Extracted info is stored in `player.ini`, where `player.py` read and display on the right side of the application.
+
 #### Join our community
 
-Contributions make the open source community a fantastic place to learn, inspire, and create. Any contributions you make are **Highly appreciated**.
+Contributions make the open source community a fantastic place to learn, inspire, and create. Any contributions you make are **highly appreciated**.
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)

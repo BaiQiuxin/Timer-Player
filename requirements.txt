@@ -1,4 +1,5 @@
 colorama @ file:///home/conda/feedstock_root/build_artifacts/colorama_1733218098505/work
+mutagen==1.47.0
 packaging==26.0
 pillow @ file:///C:/Users/task_178098860813044/croot/pillow_1780988677271/work
 ply @ file:///home/conda/feedstock_root/build_artifacts/ply_1733239724146/work
