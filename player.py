@@ -486,6 +486,22 @@ class MainWindow(QMainWindow):
         play_pause_action.setShortcut(Qt.Key_Space)
         play_pause_action.triggered.connect(self.player_widget._toggle_playback)
         self.addAction(play_pause_action)
+        
+        # Ctrl+S: Switch frameless fullscreen
+        fullscreen_action = QAction("Switch Frameless Fullscreen", self)
+        fullscreen_action.setShortcut("Ctrl+S")
+        fullscreen_action.triggered.connect(self.toggle_frameless_fullscreen)
+        self.addAction(fullscreen_action)
+        
+    def toggle_frameless_fullscreen(self):
+        """Toggle between normal and frameless fullscreen mode"""
+        if self.isFullScreen():
+            self.showNormal()
+            self.setWindowFlags(self.windowFlags() & ~Qt.FramelessWindowHint)
+            self.show()
+        else:
+            self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
+            self.showFullScreen()
 
 
     def keyPressEvent(self, event):
