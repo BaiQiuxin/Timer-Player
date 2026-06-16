@@ -15,8 +15,8 @@ from PyQt5.QtCore import Qt, QTimer, QUrl
 from PyQt5.QtGui import QFont, QPixmap, QImage, QColor
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtWidgets import (
-    QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout,
-    QMainWindow, QMessageBox, QAction,
+    QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLayout,
+    QMainWindow, QAction,
 )
 
 
@@ -25,10 +25,11 @@ WINDOW_HEIGHT = 720
 TIMER_TEXT_FILE = "./timer_text.txt"
 CONFIG_FILE = "./player.ini"
 TIMER_INTERVAL_MS = 100
+MAX_SONGS_VOLUME = 100
 
 
 def load_config(path: str) -> List[dict]:
-    """读取 player.ini 配置"""
+    """Load configuration from player.ini"""
     cfg = configparser.ConfigParser()
     cfg.read(path, encoding="utf-8")
     sections = cfg.sections()
@@ -47,20 +48,20 @@ def load_config(path: str) -> List[dict]:
 
 
 def load_custom_text(path: str) -> str:
-    """从文件中读取自定义文本"""
+    """Read custom text for timer from file"""
     try:
         return Path(path).read_text(encoding="utf-8").strip()
     except FileNotFoundError:
-        return "专注时刻"
+        return "Nah, just a timer. No custom text found."
 
 
 def generate_qr_pixmap(data: str, size: int = 200) -> QPixmap:
-    """生成二维码并返回 QPixmap"""
+    """Generate QR code and return QPixmap"""
     qr = qrcode.QRCode(box_size=4, border=2)
     qr.add_data(data)
     qr.make(fit=True)
     img = qr.make_image(fill_color="black", back_color="white")
-    # 转换为 QPixmap
+    # Convert to QPixmap
     img = img.convert("RGB")
     qimage = QImage(
         img.tobytes(), img.width, img.height, img.width * 3,
@@ -73,100 +74,99 @@ def generate_qr_pixmap(data: str, size: int = 200) -> QPixmap:
 
 
 def load_cover_pixmap(path: str, size: tuple = (320, 320)) -> QPixmap:
-    """加载专辑封面图片"""
+    """Load album cover image"""
     pix = QPixmap(path)
     if pix.isNull():
         pix = QPixmap(size[0], size[1])
-        pix.fill(QColor("#cccccc"))
+        pix.fill(QColor("#ffffff"))
     return pix.scaled(
         size[0], size[1], Qt.KeepAspectRatio,
         Qt.SmoothTransformation
     )
 
 
-# ── 计时器组件 ────────────────────────────────────────────────────────────
+# Timer
 
 class TimerWidget(QWidget):
-    """正计时器组件"""
+    """Timer component with custom text and time display"""
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self._running = False
-        self._elapsed_ms = 0  # 累计毫秒数
+        self._elapsed_ms = 0  # Accumulated elapsed time in milliseconds
 
-        # 计时 QTimer（每 100ms 触发一次）
         self._timer = QTimer(self)
         self._timer.timeout.connect(self._tick)
 
         self._init_ui()
         self._update_display()
 
-    def _init_ui(self):
-        # 自定义文本标签
+    def _init_ui(self) -> None:
+        # Custom text label
         self.text_label = QLabel()
         self.text_label.setAlignment(Qt.AlignCenter)
         self.text_label.setWordWrap(True)
         font_text = QFont("Microsoft YaHei", 18, QFont.Bold)
         self.text_label.setFont(font_text)
-        self.text_label.setStyleSheet("color: #333333;")
+        self.text_label.setStyleSheet("color: #000000;")
 
-        # 计时器显示标签
+        # Time display label
         self.time_label = QLabel("00:00:00")
         self.time_label.setAlignment(Qt.AlignCenter)
         font_time = QFont("Consolas", 64, QFont.Bold)
         self.time_label.setFont(font_time)
-        self.time_label.setStyleSheet("color: #222222;")
+        self.time_label.setStyleSheet("color: #000000;")
 
-        # 布局
+        # Layout
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignCenter)
         layout.addStretch(2)
         layout.addWidget(self.text_label)
-        layout.addSpacing(20)
+        layout.addSpacing(30)
         layout.addWidget(self.time_label)
-        layout.addStretch(3)
+        layout.addStretch(2)
         self.setLayout(layout)
 
-    def load_text(self, path: str):
-        """加载自定义文本"""
+    def load_text(self, path: str) -> None:
+        """Load custom text for the timer"""
         text = load_custom_text(path)
         self.text_label.setText(text)
 
-    def _tick(self):
-        """计时器 tick"""
+    def _tick(self) -> None:
+        """Timer tick"""
         self._elapsed_ms += TIMER_INTERVAL_MS
         self._update_display()
 
-    def _update_display(self):
+    def _update_display(self) -> None:
         total_sec = self._elapsed_ms // 1000
         h = total_sec // 3600
         m = (total_sec % 3600) // 60
         s = total_sec % 60
         self.time_label.setText(f"{h:02d}:{m:02d}:{s:02d}")
 
-    def start(self):
-        """开始计时"""
+    def start(self) -> None:
+        """Start the timer"""
         if not self._running:
             self._timer.start(TIMER_INTERVAL_MS)
             self._running = True
             self._set_normal_style()
 
-    def stop(self):
-        """停止计时"""
+    def stop(self) -> None:
+        """Stop the timer"""
         if self._running:
             self._timer.stop()
             self._running = False
             self._set_faded_style()
 
-    def toggle(self):
-        """切换 启动/暂停"""
+    def toggle(self) -> None:
+        """Toggle start/pause"""
         if self._running:
             self.stop()
         else:
             self.start()
 
-    def reset(self):
-        """重置计时器"""
+    def reset(self) -> None:
+        """Reset the timer"""
         self._timer.stop()
         self._elapsed_ms = 0
         self._running = False
@@ -176,110 +176,61 @@ class TimerWidget(QWidget):
     def is_running(self) -> bool:
         return self._running
 
-    def _set_faded_style(self):
-        """设置淡出样式"""
+    def _set_faded_style(self) -> None:
+        """Set faded style"""
         self.text_label.setStyleSheet("color: #aaaaaa;")
         self.time_label.setStyleSheet("color: #aaaaaa;")
 
-    def _set_normal_style(self):
-        """设置正常样式"""
-        self.text_label.setStyleSheet("color: #333333;")
-        self.time_label.setStyleSheet("color: #222222;")
+    def _set_normal_style(self) -> None:
+        """Set normal style"""
+        self.text_label.setStyleSheet("color: #000000;")
+        self.time_label.setStyleSheet("color: #000000;")
 
 
-# ── 音乐播放器组件 ────────────────────────────────────────────────────────
+# Music Player
 
 class MusicPlayerWidget(QWidget):
-    """本地音乐播放器组件"""
+    """Local music player component with album cover, song info, QR code, and controls"""
 
     def __init__(self, songs: List[dict], parent=None):
         super().__init__(parent)
         self._songs = songs
         self._current_index = 0
         self._player = QMediaPlayer(self)
-        self._player.setVolume(50)
+        self._player.setVolume(MAX_SONGS_VOLUME)
 
         self._init_ui()
         self._load_current_song()
 
-        # 歌曲播放结束时自动播放下一曲
+        # Playback finished signal to auto-play next song
         self._player.mediaStatusChanged.connect(self._on_media_status_changed)
 
     def _init_ui(self):
-        # 专辑封面
+        # Album cover
         self.cover_label = QLabel()
         self.cover_label.setAlignment(Qt.AlignCenter)
         self.cover_label.setFixedSize(340, 340)
 
-        # 作者
+        # Author name
         self.author_label = QLabel()
         self.author_label.setAlignment(Qt.AlignCenter)
         font_author = QFont("Microsoft YaHei", 16, QFont.Bold)
         self.author_label.setFont(font_author)
-        self.author_label.setStyleSheet("color: #444444;")
+        self.author_label.setStyleSheet("color: #000000;")
 
-        # 歌曲名
+        # Song name
         self.song_label = QLabel()
         self.song_label.setAlignment(Qt.AlignCenter)
         font_song = QFont("Microsoft YaHei", 14)
         self.song_label.setFont(font_song)
-        self.song_label.setStyleSheet("color: #666666;")
+        self.song_label.setStyleSheet("color: #000000;")
 
-        # 二维码
+        # QR code
         self.qr_label = QLabel()
         self.qr_label.setAlignment(Qt.AlignCenter)
         self.qr_label.setFixedSize(220, 220)
 
-        # 按钮样式
-        btn_font = QFont("Microsoft YaHei", 12)
-        btn_style = """
-            QPushButton {
-                background-color: #4CAF50; color: white;
-                border: none; border-radius: 6px;
-                padding: 8px 16px;
-            }
-            QPushButton:hover { background-color: #45a049; }
-            QPushButton:pressed { background-color: #3d8b40; }
-        """
-        nav_btn_style = """
-            QPushButton {
-                background-color: #2196F3; color: white;
-                border: none; border-radius: 6px;
-                padding: 8px 16px;
-                font-size: 16px;
-            }
-            QPushButton:hover { background-color: #1976D2; }
-            QPushButton:pressed { background-color: #1565C0; }
-        """
-
-        # 上一曲按钮
-        self.prev_btn = QPushButton("⏮ 上一曲")
-        self.prev_btn.setFont(btn_font)
-        self.prev_btn.setStyleSheet(nav_btn_style)
-        self.prev_btn.clicked.connect(self._prev_song)
-
-        # 播放/暂停按钮
-        self.play_btn = QPushButton("▶ 播放")
-        self.play_btn.setFixedWidth(120)
-        self.play_btn.setFont(btn_font)
-        self.play_btn.setStyleSheet(btn_style)
-        self.play_btn.clicked.connect(self._toggle_playback)
-
-        # 下一曲按钮
-        self.next_btn = QPushButton("下一曲 ⏭")
-        self.next_btn.setFont(btn_font)
-        self.next_btn.setStyleSheet(nav_btn_style)
-        self.next_btn.clicked.connect(self._next_song)
-
-        # 按钮水平布局
-        btn_layout = QHBoxLayout()
-        btn_layout.setAlignment(Qt.AlignCenter)
-        btn_layout.setSpacing(16)
-        btn_layout.addWidget(self.prev_btn)
-        btn_layout.addWidget(self.play_btn)
-        btn_layout.addWidget(self.next_btn)
-
-        # 整体布局
+        # Overall layout
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignCenter)
         layout.addStretch(1)
@@ -289,86 +240,82 @@ class MusicPlayerWidget(QWidget):
         layout.addWidget(self.song_label)
         layout.addSpacing(16)
         layout.addWidget(self.qr_label, alignment=Qt.AlignCenter)
-        layout.addSpacing(8)
-        layout.addLayout(btn_layout)
         layout.addStretch(2)
         self.setLayout(layout)
 
     def _load_current_song(self):
-        """加载当前歌曲信息"""
+        """Load current song info, cover, QR code, and audio file"""
         if not self._songs or self._current_index >= len(self._songs):
             return
         cfg = self._songs[self._current_index]
 
-        # 封面图片
+        # Cover image
         cover_path = cfg.get("cover_image", "")
         if cover_path:
             pix = load_cover_pixmap(cover_path, (320, 320))
             self.cover_label.setPixmap(pix)
 
-        # 作者 & 歌曲名
+        # Author and song name
         self.author_label.setText(cfg.get("author", "未知作者"))
         self.song_label.setText(cfg.get("song_name", "未知歌曲"))
 
-        # 二维码
+        # QR code for song URL
         song_url = cfg.get("song_url", "")
         if song_url:
             qr_pix = generate_qr_pixmap(song_url, 200)
             self.qr_label.setPixmap(qr_pix)
 
-        # 音频文件
+        # Audio file
         audio_file = cfg.get("audio_file", "")
         if audio_file and Path(audio_file).exists():
             self._player.setMedia(
                 QMediaContent(QUrl.fromLocalFile(str(Path(audio_file).resolve())))
             )
 
-    def _toggle_playback(self):
-        """切换播放/暂停"""
+    def _toggle_playback(self) -> None:
+        """Switch between play and pause states"""
         state = self._player.state()
         if state == QMediaPlayer.PlayingState:
             self._player.pause()
-            self.play_btn.setText("▶ 播放")
         else:
             self._player.play()
-            self.play_btn.setText("⏸ 暂停")
 
-    def _prev_song(self):
-        """上一曲"""
+    def _prev_song(self) -> None:
+        """Previous song"""
         if not self._songs:
             return
         self._current_index = (self._current_index - 1) % len(self._songs)
         self._load_current_song()
-        # 如果正在播放则自动播放
+        # Play if currently playing
         if self._player.state() == QMediaPlayer.PlayingState:
             self._player.play()
 
-    def _next_song(self):
-        """下一曲"""
+    def _next_song(self) -> None:
+        """Next song"""
         if not self._songs:
             return
         self._current_index = (self._current_index + 1) % len(self._songs)
         self._load_current_song()
-        # 如果正在播放则自动播放
+        # Play if currently playing
         if self._player.state() == QMediaPlayer.PlayingState:
             self._player.play()
 
     def _on_media_status_changed(self, status):
-        """歌曲播放结束自动播放下一曲（顺序播放）"""
+        """Play next song when current song finishes"""
         if status == QMediaPlayer.EndOfMedia:
             self._next_song()
 
     def set_songs(self, songs: List[dict]):
-        """更新歌曲列表并重新加载"""
+        """Refresh song list and reset to first song"""
         self._songs = songs
         self._current_index = 0
         self._load_current_song()
 
 
-# ── 主窗口 ────────────────────────────────────────────────────────────────
+# Main Window
 
 class MainWindow(QMainWindow):
-    """主窗口"""
+    """Main application window that combines TimerWidget and MusicPlayerWidget"""
 
     def __init__(self):
         super().__init__()
@@ -382,90 +329,85 @@ class MainWindow(QMainWindow):
         self.resize(WINDOW_WIDTH, WINDOW_HEIGHT)
         self._center()
 
-        # 中央部件
+        # Central widget with horizontal layout
         central = QWidget()
         self.setCentralWidget(central)
         main_layout = QHBoxLayout(central)
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
 
-        # ── 左侧：计时器 ──
+        # Left side: Timer
         self.timer_widget = TimerWidget()
         self.timer_widget.setStyleSheet("background-color: #ffffff;")
         self.timer_widget.load_text(TIMER_TEXT_FILE)
         main_layout.addWidget(self.timer_widget, 4)  # 40%
 
-        # ── 右侧：音乐播放器 ──
+        # Right side: Music Player
         self.player_widget = MusicPlayerWidget(self._config)
-        self.player_widget.setStyleSheet("background-color: #f5f5f5;")
+        self.player_widget.setStyleSheet("background-color: #ffffff;")
         main_layout.addWidget(self.player_widget, 6)  # 60%
 
-        # 状态栏
+        # Status bar with instructions
         self.statusBar().showMessage(
-            "就绪  |  Ctrl+F 切换计时  |  Ctrl+R 重置计时  |  ← 上一曲  |  → 下一曲"
+            "Ctrl+F Switch Timer  |  Ctrl+R Reset Timer  |  ← Previous Song  |  → Next Song |  Space Play/Pause  |  Esc Exit"
         )
 
     def _center(self):
-        """窗口居中"""
+        """Center the window on the screen"""
         qr = self.frameGeometry()
         cp = self.screen().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
     def _setup_shortcuts(self):
-        """设置快捷键"""
-        # Ctrl+F: 切换计时
-        toggle_action = QAction("切换计时", self)
+        """Setup keyboard shortcuts"""
+        # Ctrl+F: Switch timer
+        toggle_action = QAction("Switch Timer", self)
         toggle_action.setShortcut("Ctrl+F")
         toggle_action.triggered.connect(self.timer_widget.toggle)
         self.addAction(toggle_action)
 
-        # Ctrl+R: 重置计时
-        reset_action = QAction("重置计时", self)
+        # Ctrl+R: Reset timer
+        reset_action = QAction("Reset Timer", self)
         reset_action.setShortcut("Ctrl+R")
         reset_action.triggered.connect(self.timer_widget.reset)
         self.addAction(reset_action)
 
-        # ←: 上一曲
-        prev_action = QAction("上一曲", self)
+        # ←: Previous song
+        prev_action = QAction("Previous Song", self)
         prev_action.setShortcut(Qt.Key_Left)
         prev_action.triggered.connect(self.player_widget._prev_song)
         self.addAction(prev_action)
 
-        # →: 下一曲
-        next_action = QAction("下一曲", self)
+        # →: Next song
+        next_action = QAction("Next Song", self)
         next_action.setShortcut(Qt.Key_Right)
         next_action.triggered.connect(self.player_widget._next_song)
         self.addAction(next_action)
+        
+        # Space: Play/Pause
+        play_pause_action = QAction("Play/Pause", self)
+        play_pause_action.setShortcut(Qt.Key_Space)
+        play_pause_action.triggered.connect(self.player_widget._toggle_playback)
+        self.addAction(play_pause_action)
 
-    def closeEvent(self, event):
-        """关闭确认"""
-        reply = QMessageBox.question(
-            self, "退出", "确定要退出吗？",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No,
-        )
-        if reply == QMessageBox.Yes:
-            event.accept()
-        else:
-            event.ignore()
 
     def keyPressEvent(self, event):
-        """按 Esc 关闭窗口"""
+        """Press Esc to close the window"""
         if event.key() == Qt.Key_Escape:
             self.close()
         super().keyPressEvent(event)
 
 
-# ── 入口 ──────────────────────────────────────────────────────────────────
+# Application Entry Point
 
 def main():
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
 
-    # 全局样式
+    # Global style
     app.setStyleSheet("""
-        QMainWindow { background-color: #fafafa; }
+        QMainWindow { background-color: #ffffff; }
         QStatusBar {
             background-color: #e8e8e8; color: #555; font-size: 12px;
         }
