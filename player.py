@@ -4,6 +4,10 @@ Timer & Player
 A simple desktop application that combines a local music player with a timer.
 """
 
+import os
+# Use Windows Media Foundation instead of DirectShow for FLAC support
+os.environ["QT_MULTIMEDIA_PREFERRED_PLUGINS"] = "windowsmediafoundation"
+
 import sys
 import configparser
 from pathlib import Path
@@ -12,7 +16,7 @@ from typing import List
 import qrcode
 
 from PyQt5.QtCore import Qt, QTimer, QUrl
-from PyQt5.QtGui import QFont, QPixmap, QImage, QColor
+from PyQt5.QtGui import QFont, QPixmap, QImage, QColor, QDesktopServices
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLayout,
@@ -27,7 +31,7 @@ BASE_HEIGHT = 1080
 TIMER_TEXT_FILE = "./timer_text.txt"
 CONFIG_FILE = "./player.ini"
 TIMER_INTERVAL_MS = 100
-MAX_SONGS_VOLUME = 100
+MAX_SONGS_VOLUME = 80
 
 
 def load_config(path: str) -> List[dict]:
@@ -240,6 +244,8 @@ class MusicPlayerWidget(QWidget):
         self._color_cover_pixmap = QPixmap()
         self._color_qr_pixmap = QPixmap()
 
+        self._current_song_url = ""
+
         self._init_ui()
         self._load_current_song()
         # Initially stopped → show faded style
@@ -275,10 +281,12 @@ class MusicPlayerWidget(QWidget):
         self.song_label.setFont(font_song)
         self.song_label.setStyleSheet("color: #000000;")
 
-        # QR code
+        # QR code (clickable — opens song URL in browser)
         self.qr_label = QLabel()
         self.qr_label.setAlignment(Qt.AlignCenter)
         self.qr_label.setFixedSize(self._base_qr_size, self._base_qr_size)
+        self.qr_label.setCursor(Qt.PointingHandCursor)
+        self.qr_label.mousePressEvent = self._on_qr_clicked
 
         # Overall layout
         layout = QVBoxLayout()
@@ -315,6 +323,7 @@ class MusicPlayerWidget(QWidget):
 
         # QR code for song URL
         song_url = cfg.get("song_url", "")
+        self._current_song_url = song_url
         if song_url:
             self._color_qr_pixmap = generate_qr_pixmap(song_url, qr_pix_size)
             self.qr_label.setPixmap(self._color_qr_pixmap)
@@ -344,9 +353,15 @@ class MusicPlayerWidget(QWidget):
 
         # QR code
         song_url = cfg.get("song_url", "")
+        self._current_song_url = song_url
         if song_url:
             self._color_qr_pixmap = generate_qr_pixmap(song_url, qr_pix_size)
             self.qr_label.setPixmap(self._color_qr_pixmap)
+
+    def _on_qr_clicked(self, event):
+        """Open the current song URL in the default browser when QR is clicked"""
+        if self._current_song_url:
+            QDesktopServices.openUrl(QUrl(self._current_song_url))
 
     def resizeEvent(self, event):
         """Scale fonts and widget sizes proportionally when window is resized"""

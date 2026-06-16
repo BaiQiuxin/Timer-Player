@@ -60,7 +60,7 @@ Timer and local music player
 
 1. Clone the repo
 2. Run `pip install -r requirements.txt`.
-3. Put your audio files in `./data/song` and album cover images with the same names as your audio files in `./data/thumbnail`
+3. Put your audio files `*.flac` in `./data/song`.
 4. Run `.\run.bat` or run `python initialize.py` before running `python player.py`
 
 ```sh
@@ -89,8 +89,8 @@ MusicPlayer
    │  ├─ song1.png
    │  └─ song2.png
    └─ song
-      ├─ song1.mp3
-      └─ song2.mp3
+      ├─ song1.flac
+      └─ song2.flac
 
 ```
 
