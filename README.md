@@ -76,10 +76,10 @@ eg:
 MusicPlayer
 ├─ initialize.py
 ├─ LICENSE
-├─ requirements.txt
 ├─ player.ini
 ├─ player.py
 ├─ README.md
+├─ requirements.txt
 ├─ run.bat
 ├─ timer_text.txt
 ├─ images
