@@ -236,8 +236,14 @@ class MusicPlayerWidget(QWidget):
         self._base_cover_pixmap_size = 320
         self._base_qr_pixmap_size = 200
 
+        # Store color pixmaps for toggling between normal and faded style
+        self._color_cover_pixmap = QPixmap()
+        self._color_qr_pixmap = QPixmap()
+
         self._init_ui()
         self._load_current_song()
+        # Initially stopped → show faded style
+        self._set_faded_style()
 
         # Playback finished signal to auto-play next song
         self._player.mediaStatusChanged.connect(self._on_media_status_changed)
@@ -300,8 +306,8 @@ class MusicPlayerWidget(QWidget):
         # Cover image
         cover_path = cfg.get("cover_image", "")
         if cover_path:
-            pix = load_cover_pixmap(cover_path, (cover_pix_size, cover_pix_size))
-            self.cover_label.setPixmap(pix)
+            self._color_cover_pixmap = load_cover_pixmap(cover_path, (cover_pix_size, cover_pix_size))
+            self.cover_label.setPixmap(self._color_cover_pixmap)
 
         # Author and song name
         self.author_label.setText(cfg.get("author", "未知作者"))
@@ -310,8 +316,8 @@ class MusicPlayerWidget(QWidget):
         # QR code for song URL
         song_url = cfg.get("song_url", "")
         if song_url:
-            qr_pix = generate_qr_pixmap(song_url, qr_pix_size)
-            self.qr_label.setPixmap(qr_pix)
+            self._color_qr_pixmap = generate_qr_pixmap(song_url, qr_pix_size)
+            self.qr_label.setPixmap(self._color_qr_pixmap)
 
         # Audio file
         audio_file = cfg.get("audio_file", "")
@@ -333,14 +339,14 @@ class MusicPlayerWidget(QWidget):
         # Cover image
         cover_path = cfg.get("cover_image", "")
         if cover_path:
-            pix = load_cover_pixmap(cover_path, (cover_pix_size, cover_pix_size))
-            self.cover_label.setPixmap(pix)
+            self._color_cover_pixmap = load_cover_pixmap(cover_path, (cover_pix_size, cover_pix_size))
+            self.cover_label.setPixmap(self._color_cover_pixmap)
 
         # QR code
         song_url = cfg.get("song_url", "")
         if song_url:
-            qr_pix = generate_qr_pixmap(song_url, qr_pix_size)
-            self.qr_label.setPixmap(qr_pix)
+            self._color_qr_pixmap = generate_qr_pixmap(song_url, qr_pix_size)
+            self.qr_label.setPixmap(self._color_qr_pixmap)
 
     def resizeEvent(self, event):
         """Scale fonts and widget sizes proportionally when window is resized"""
@@ -367,14 +373,58 @@ class MusicPlayerWidget(QWidget):
 
         # Reload cover and QR pixmaps at new scale
         self._update_scaled_content()
+        # Re-apply current style (faded or normal)
+        if self._player.state() == QMediaPlayer.PlayingState:
+            self._set_normal_style()
+        else:
+            self._set_faded_style()
+
+    @staticmethod
+    def _to_grayscale(pixmap: QPixmap) -> QPixmap:
+        """Convert a QPixmap to grayscale, preserving alpha channel"""
+        if pixmap.isNull():
+            return pixmap
+        image = pixmap.toImage().convertToFormat(QImage.Format_ARGB32)
+        for y in range(image.height()):
+            for x in range(image.width()):
+                pixel = image.pixel(x, y)
+                alpha = (pixel >> 24) & 0xFF
+                r = (pixel >> 16) & 0xFF
+                g = (pixel >> 8) & 0xFF
+                b = pixel & 0xFF
+                gray = int(0.299 * r + 0.587 * g + 0.114 * b)
+                image.setPixel(x, y, (alpha << 24) | (gray << 16) | (gray << 8) | gray)
+        return QPixmap.fromImage(image)
+
+    def _set_faded_style(self) -> None:
+        """Set faded style for paused state"""
+        self.author_label.setStyleSheet("color: #aaaaaa;")
+        self.song_label.setStyleSheet("color: #aaaaaa;")
+        # Convert cover and QR to grayscale
+        if not self._color_cover_pixmap.isNull():
+            self.cover_label.setPixmap(self._to_grayscale(self._color_cover_pixmap))
+        if not self._color_qr_pixmap.isNull():
+            self.qr_label.setPixmap(self._to_grayscale(self._color_qr_pixmap))
+
+    def _set_normal_style(self) -> None:
+        """Set normal style for playing state"""
+        self.author_label.setStyleSheet("color: #000000;")
+        self.song_label.setStyleSheet("color: #000000;")
+        # Restore color cover and QR
+        if not self._color_cover_pixmap.isNull():
+            self.cover_label.setPixmap(self._color_cover_pixmap)
+        if not self._color_qr_pixmap.isNull():
+            self.qr_label.setPixmap(self._color_qr_pixmap)
 
     def _toggle_playback(self) -> None:
         """Switch between play and pause states"""
         state = self._player.state()
         if state == QMediaPlayer.PlayingState:
             self._player.pause()
+            self._set_faded_style()
         else:
             self._player.play()
+            self._set_normal_style()
 
     def _prev_song(self) -> None:
         """Previous song"""
@@ -400,12 +450,22 @@ class MusicPlayerWidget(QWidget):
         """Play next song when current song finishes"""
         if status == QMediaPlayer.EndOfMedia:
             self._next_song()
+            # Update style based on resulting player state
+            if self._player.state() == QMediaPlayer.PlayingState:
+                self._set_normal_style()
+            else:
+                self._set_faded_style()
 
     def set_songs(self, songs: List[dict]):
         """Refresh song list and reset to first song"""
         self._songs = songs
         self._current_index = 0
         self._load_current_song()
+        # Update style based on player state
+        if self._player.state() == QMediaPlayer.PlayingState:
+            self._set_normal_style()
+        else:
+            self._set_faded_style()
 
 
 # Main Window
@@ -442,11 +502,6 @@ class MainWindow(QMainWindow):
         self.player_widget = MusicPlayerWidget(self._config)
         self.player_widget.setStyleSheet("background-color: #ffffff;")
         main_layout.addWidget(self.player_widget, 6)  # 60%
-
-        # Status bar with instructions
-        self.statusBar().showMessage(
-            "Ctrl+F Switch Timer  |  Ctrl+R Reset Timer  |  ← Previous Song  |  → Next Song |  Space Play/Pause  |  Esc Exit"
-        )
 
     def _center(self):
         """Center the window on the screen"""
@@ -490,10 +545,10 @@ class MainWindow(QMainWindow):
         # Ctrl+S: Switch frameless fullscreen
         fullscreen_action = QAction("Switch Frameless Fullscreen", self)
         fullscreen_action.setShortcut("Ctrl+S")
-        fullscreen_action.triggered.connect(self.toggle_frameless_fullscreen)
+        fullscreen_action.triggered.connect(self.toggleFramelessFullscreen)
         self.addAction(fullscreen_action)
         
-    def toggle_frameless_fullscreen(self):
+    def toggleFramelessFullscreen(self):
         """Toggle between normal and frameless fullscreen mode"""
         if self.isFullScreen():
             self.showNormal()
