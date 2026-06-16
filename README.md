@@ -9,7 +9,6 @@ Timer and local music player
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
 
 <!-- PROJECT LOGO -->
 <br />
@@ -133,5 +132,3 @@ And thanks shaojintian for this [README template](https://github.com/shaojintian
 [issues-url]: https://github.com/BaiQiuxin/Timer-Player/issues
 [license-shield]: https://img.shields.io/github/license/BaiQiuxin/Timer-Player
 [license-url]: https://github.com/BaiQiuxin/Timer-Player/blob/master/LICENSE
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/
