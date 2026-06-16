@@ -125,13 +125,13 @@ Sincere thanks to [Tsoding Daily](https://www.youtube.com/@TsodingDaily) for ins
 And thanks shaojintian for this [README template](https://github.com/shaojintian/Best_README_template)
 
 <!-- links -->
-[forks-shield]: https://img.shields.io/github/forks/BaiQiuxin/Timer-Player.svg?style=flat-square
+[forks-shield]: https://img.shields.io/github/forks/BaiQiuxin/Timer-Player.svg
 [forks-url]: https://github.com/BaiQiuxin/Timer-Player/network/members
-[stars-shield]: https://img.shields.io/github/stars/BaiQiuxin/Timer-Player.svg?style=flat-square
+[stars-shield]: https://img.shields.io/github/stars/BaiQiuxin/Timer-Player.svg
 [stars-url]: https://github.com/BaiQiuxin/Timer-Player/stargazers
-[issues-shield]: https://img.shields.io/github/issues/BaiQiuxin/Timer-Player.svg?style=flat-square
+[issues-shield]: https://img.shields.io/github/issues/BaiQiuxin/Timer-Player.svg
 [issues-url]: https://github.com/BaiQiuxin/Timer-Player/issues
-[license-shield]: https://img.shields.io/github/license/BaiQiuxin/Timer-Player?style=flat-square
+[license-shield]: https://img.shields.io/github/license/BaiQiuxin/Timer-Player
 [license-url]: https://github.com/BaiQiuxin/Timer-Player/blob/master/LICENSE
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/
