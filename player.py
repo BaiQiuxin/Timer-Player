@@ -20,8 +20,10 @@ from PyQt5.QtWidgets import (
 )
 
 
-WINDOW_WIDTH = 1280
-WINDOW_HEIGHT = 720
+WINDOW_WIDTH = 1980
+WINDOW_HEIGHT = 1080
+BASE_WIDTH = 1980
+BASE_HEIGHT = 1080
 TIMER_TEXT_FILE = "./timer_text.txt"
 CONFIG_FILE = "./player.ini"
 TIMER_INTERVAL_MS = 100
@@ -98,8 +100,20 @@ class TimerWidget(QWidget):
         self._timer = QTimer(self)
         self._timer.timeout.connect(self._tick)
 
+        # Base font sizes (designed at 1980x1080)
+        self._base_text_font_size = 18
+        self._base_time_font_size = 64
+        self._base_spacing = 30
+
         self._init_ui()
         self._update_display()
+
+    def _scale_factor(self) -> float:
+        """Compute scale factor relative to base window size"""
+        parent = self.window() if self.window() else self
+        w = parent.width()
+        h = parent.height()
+        return min(w / BASE_WIDTH, h / BASE_HEIGHT)
 
     def _init_ui(self) -> None:
         # Custom text label
@@ -126,6 +140,21 @@ class TimerWidget(QWidget):
         layout.addWidget(self.time_label)
         layout.addStretch(2)
         self.setLayout(layout)
+
+    def resizeEvent(self, event):
+        """Scale fonts proportionally when window is resized"""
+        super().resizeEvent(event)
+        scale = self._scale_factor()
+
+        # Update text label font
+        new_text_size = max(1, round(self._base_text_font_size * scale))
+        font_text = QFont("Microsoft YaHei", new_text_size, QFont.Bold)
+        self.text_label.setFont(font_text)
+
+        # Update time label font
+        new_time_size = max(1, round(self._base_time_font_size * scale))
+        font_time = QFont("Consolas", new_time_size, QFont.Bold)
+        self.time_label.setFont(font_time)
 
     def load_text(self, path: str) -> None:
         """Load custom text for the timer"""
@@ -199,36 +228,51 @@ class MusicPlayerWidget(QWidget):
         self._player = QMediaPlayer(self)
         self._player.setVolume(MAX_SONGS_VOLUME)
 
+        # Base sizes (designed at 1980x1080)
+        self._base_cover_size = 340
+        self._base_qr_size = 220
+        self._base_author_font_size = 16
+        self._base_song_font_size = 14
+        self._base_cover_pixmap_size = 320
+        self._base_qr_pixmap_size = 200
+
         self._init_ui()
         self._load_current_song()
 
         # Playback finished signal to auto-play next song
         self._player.mediaStatusChanged.connect(self._on_media_status_changed)
 
+    def _scale_factor(self) -> float:
+        """Compute scale factor relative to base window size"""
+        parent = self.window() if self.window() else self
+        w = parent.width()
+        h = parent.height()
+        return min(w / BASE_WIDTH, h / BASE_HEIGHT)
+
     def _init_ui(self):
         # Album cover
         self.cover_label = QLabel()
         self.cover_label.setAlignment(Qt.AlignCenter)
-        self.cover_label.setFixedSize(340, 340)
+        self.cover_label.setFixedSize(self._base_cover_size, self._base_cover_size)
 
         # Author name
         self.author_label = QLabel()
         self.author_label.setAlignment(Qt.AlignCenter)
-        font_author = QFont("Microsoft YaHei", 16, QFont.Bold)
+        font_author = QFont("Microsoft YaHei", self._base_author_font_size, QFont.Bold)
         self.author_label.setFont(font_author)
         self.author_label.setStyleSheet("color: #000000;")
 
         # Song name
         self.song_label = QLabel()
         self.song_label.setAlignment(Qt.AlignCenter)
-        font_song = QFont("Microsoft YaHei", 14)
+        font_song = QFont("Microsoft YaHei", self._base_song_font_size)
         self.song_label.setFont(font_song)
         self.song_label.setStyleSheet("color: #000000;")
 
         # QR code
         self.qr_label = QLabel()
         self.qr_label.setAlignment(Qt.AlignCenter)
-        self.qr_label.setFixedSize(220, 220)
+        self.qr_label.setFixedSize(self._base_qr_size, self._base_qr_size)
 
         # Overall layout
         layout = QVBoxLayout()
@@ -249,10 +293,14 @@ class MusicPlayerWidget(QWidget):
             return
         cfg = self._songs[self._current_index]
 
+        scale = self._scale_factor()
+        cover_pix_size = max(1, round(self._base_cover_pixmap_size * scale))
+        qr_pix_size = max(1, round(self._base_qr_pixmap_size * scale))
+
         # Cover image
         cover_path = cfg.get("cover_image", "")
         if cover_path:
-            pix = load_cover_pixmap(cover_path, (320, 320))
+            pix = load_cover_pixmap(cover_path, (cover_pix_size, cover_pix_size))
             self.cover_label.setPixmap(pix)
 
         # Author and song name
@@ -262,7 +310,7 @@ class MusicPlayerWidget(QWidget):
         # QR code for song URL
         song_url = cfg.get("song_url", "")
         if song_url:
-            qr_pix = generate_qr_pixmap(song_url, 200)
+            qr_pix = generate_qr_pixmap(song_url, qr_pix_size)
             self.qr_label.setPixmap(qr_pix)
 
         # Audio file
@@ -271,6 +319,54 @@ class MusicPlayerWidget(QWidget):
             self._player.setMedia(
                 QMediaContent(QUrl.fromLocalFile(str(Path(audio_file).resolve())))
             )
+
+    def _update_scaled_content(self):
+        """Re-apply cover and QR pixmaps at current scale (without touching audio)"""
+        if not self._songs or self._current_index >= len(self._songs):
+            return
+        cfg = self._songs[self._current_index]
+
+        scale = self._scale_factor()
+        cover_pix_size = max(1, round(self._base_cover_pixmap_size * scale))
+        qr_pix_size = max(1, round(self._base_qr_pixmap_size * scale))
+
+        # Cover image
+        cover_path = cfg.get("cover_image", "")
+        if cover_path:
+            pix = load_cover_pixmap(cover_path, (cover_pix_size, cover_pix_size))
+            self.cover_label.setPixmap(pix)
+
+        # QR code
+        song_url = cfg.get("song_url", "")
+        if song_url:
+            qr_pix = generate_qr_pixmap(song_url, qr_pix_size)
+            self.qr_label.setPixmap(qr_pix)
+
+    def resizeEvent(self, event):
+        """Scale fonts and widget sizes proportionally when window is resized"""
+        super().resizeEvent(event)
+        scale = self._scale_factor()
+
+        # Update author font
+        new_author_size = max(1, round(self._base_author_font_size * scale))
+        font_author = QFont("Microsoft YaHei", new_author_size, QFont.Bold)
+        self.author_label.setFont(font_author)
+
+        # Update song font
+        new_song_size = max(1, round(self._base_song_font_size * scale))
+        font_song = QFont("Microsoft YaHei", new_song_size)
+        self.song_label.setFont(font_song)
+
+        # Update cover widget size
+        new_cover_size = max(1, round(self._base_cover_size * scale))
+        self.cover_label.setFixedSize(new_cover_size, new_cover_size)
+
+        # Update QR widget size
+        new_qr_size = max(1, round(self._base_qr_size * scale))
+        self.qr_label.setFixedSize(new_qr_size, new_qr_size)
+
+        # Reload cover and QR pixmaps at new scale
+        self._update_scaled_content()
 
     def _toggle_playback(self) -> None:
         """Switch between play and pause states"""
