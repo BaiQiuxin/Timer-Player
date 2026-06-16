@@ -11,9 +11,11 @@ import configparser
 from pathlib import Path
 
 FILE_PATH = "./data/song"
+THUMBNAIL_PATH = "./data/thumbnail"
 CONFIG_FILE_PATH = "./player.ini"
 DEFAULT_SONG_URL = "http://qjjlb.quanjian.com.cn/musicdl/"
 AUDIO_EXTENSIONS = {".mp3", ".wav", ".flac", ".ogg", ".m4a", ".aac", ".wma"}
+IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".bmp", ".webp"}
 
 
 def scan_audio_files(directory: str) -> list[dict]:
@@ -37,9 +39,13 @@ def scan_audio_files(directory: str) -> list[dict]:
                 author = "Unknown Artist"
                 song_name = stem.strip()
 
-            # Search for cover image with the same name but .png extension
-            cover_path = f.with_suffix(".png")
-            cover = str(cover_path) if cover_path.is_file() else ""
+            # Search for cover image in ./data/thumbnail with the same stem name
+            cover = ""
+            for ext in IMAGE_EXTENSIONS:
+                cover_candidate = Path(THUMBNAIL_PATH) / (f.stem + ext)
+                if cover_candidate.is_file():
+                    cover = str(cover_candidate)
+                    break
 
             songs.append({
                 "audio_file": str(f),

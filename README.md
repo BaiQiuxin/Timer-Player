@@ -11,6 +11,7 @@ Timer and local music player
 [![MIT License][license-shield]][license-url]
 
 <!-- PROJECT LOGO -->
+
 <br />
 
 <p align="center">
@@ -42,7 +43,6 @@ Timer and local music player
       - [Environment](#environment)
       - [Install](#install)
     - [File Tree](#file-tree)
-    - [Implement](#implement)
       - [Join our community](#join-our-community)
     - [Version Control](#version-control)
     - [Author](#author)
@@ -59,8 +59,9 @@ Timer and local music player
 #### Install
 
 1. Clone the repo
-2. Put your audio files in `./data/song` and album cover images with the same names as your audio files in `./data/thumbnail`
-3. Run `.\run.bat`
+2. Run `pip install -r requirements.txt`.
+3. Put your audio files in `./data/song` and album cover images with the same names as your audio files in `./data/thumbnail`
+4. Run `.\run.bat` or run `python initialize.py` before running `python player.py`
 
 ```sh
 git clone https://github.com/BaiQiuxin/Timer-Player.git
@@ -75,6 +76,7 @@ eg:
 MusicPlayer
 ├─ initialize.py
 ├─ LICENSE
+├─ requirements.txt
 ├─ player.ini
 ├─ player.py
 ├─ README.md
@@ -91,10 +93,6 @@ MusicPlayer
       └─ song2.mp3
 
 ```
-
-### Implement
-
-Clone and run.
 
 #### Join our community
 
