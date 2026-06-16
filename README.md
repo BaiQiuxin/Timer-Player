@@ -21,7 +21,7 @@ Timer and local music player
 
   <h3 align="center">Timer & Player</h3>
   <p align="center">
-    A simple app implemented with PyQt6,which accomplishs a timer and local music player.
+    A simple app implemented with PyQt5, which accomplishs a timer and local music player.
     <br />
     <a href="https://github.com/BaiQiuxin/Timer-Player"><strong>Documentation »</strong></a>
     <br />
@@ -132,6 +132,6 @@ And thanks shaojintian for this [README template](https://github.com/shaojintian
 [issues-shield]: https://img.shields.io/github/issues/BaiQiuxin/Timer-Player.svg?style=flat-square
 [issues-url]: https://github.com/BaiQiuxin/Timer-Player/issues
 [license-shield]: https://img.shields.io/github/license/BaiQiuxin/Timer-Player.svg?style=flat-square
-[license-url]: https://github.com/BaiQiuxin/Timer-Player/blob/master/LICENSE.txt
+[license-url]: https://github.com/BaiQiuxin/Timer-Player/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/
