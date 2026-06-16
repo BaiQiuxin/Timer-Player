@@ -131,7 +131,7 @@ And thanks shaojintian for this [README template](https://github.com/shaojintian
 [stars-url]: https://github.com/BaiQiuxin/Timer-Player/stargazers
 [issues-shield]: https://img.shields.io/github/issues/BaiQiuxin/Timer-Player.svg?style=flat-square
 [issues-url]: https://github.com/BaiQiuxin/Timer-Player/issues
-[license-shield]: https://img.shields.io/github/license/BaiQiuxin/Timer-Player.svg?style=flat-square
+[license-shield]: https://img.shields.io/github/license/BaiQiuxin/Timer-Player?style=flat-square
 [license-url]: https://github.com/BaiQiuxin/Timer-Player/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/
