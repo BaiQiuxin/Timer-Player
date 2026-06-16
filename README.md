@@ -44,9 +44,7 @@ Timer and local music player
       - [Environment](#environment)
       - [Install](#install)
     - [File Tree](#file-tree)
-    - [Architecture](#architecture)
     - [Implement](#implement)
-    - [Used Framework](#used-framework)
       - [Join our community](#join-our-community)
     - [Version Control](#version-control)
     - [Author](#author)
@@ -58,12 +56,13 @@ Timer and local music player
 #### Environment
 
 1. Python 3.14
-2. PyQt5
+2. PyQt5 5.15.11
 
 #### Install
 
 1. Clone the repo
-2. Run `.\run.bat`
+2. Put your audio files in `./data/song` and album cover images with the same names as your audio files in `./data/thumbnail`
+3. Run `.\run.bat`
 
 ```sh
 git clone https://github.com/BaiQiuxin/Timer-Player.git
@@ -81,9 +80,12 @@ filetree
 ├── player.py
 ├── initialize.py
 ├── /data/
-│   └── /song/
-│       ├── song1.mp3
-│       └── song2.mp3
+│   ├── /song/
+│   │   ├── song1.mp3
+│   │   └── song2.mp3
+│   └── /thumbnail
+│       ├── song1.png
+│       └── song2.png
 ├── run.bat
 ├── timer_text.txt
 ├── player.ini
@@ -94,23 +96,13 @@ filetree
 
 ```
 
-### Architecture
-
-请阅读[ARCHITECTURE.md](https://github.com/BaiQiuxin/Timer-Player/blob/master/ARCHITECTURE.md) 查阅为该项目的架构。
-
 ### Implement
 
-暂无
-
-### Used Framework
-
-- [xxxxxxx](https://getbootstrap.com)
-- [xxxxxxx](https://jquery.com)
-- [xxxxxxx](https://laravel.com)
+Clone and run.
 
 #### Join our community
 
-贡献使开源社区成为一个学习、激励和创造的绝佳场所。你所作的任何贡献都是**非常感谢**的。
+Contributions make the open source community a fantastic place to learn, inspire, and create. Any contributions you make are **Highly appreciated**.
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
@@ -120,31 +112,23 @@ filetree
 
 ### Version Control
 
-该项目使用Git进行版本管理。您可以在repository参看当前可用版本。
+This project uses Git for version control. You can view the currently available versions in the repository.
 
 ### Author
 
-xxx@xxxx
-
-知乎:xxxx  &ensp; qq:xxxxxx
-
- *您也可以在贡献者名单中参看所有参与该项目的开发者。*
+[Me](https://github.com/BaiQiuxin) and this is my [email](baiqiuxin@outlook.com)
 
 ### License
 
-该项目签署了MIT 授权许可，详情请参阅 [LICENSE](https://github.com/BaiQiuxin/Timer-Player/blob/master/LICENSE.txt)
+This project is licensed under the MIT License, check [LICENSE](https://github.com/BaiQiuxin/Timer-Player/LICENSE)
 
 ### Acknowledgments
 
-- [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
-- [Img Shields](https://shields.io)
-- [Choose an Open Source License](https://choosealicense.com)
-- [GitHub Pages](https://pages.github.com)
-- [Animate.css](https://daneden.github.io/animate.css)
-- [xxxxxxxxxxxxxx](https://connoratherton.com/loaders)
+Sincere thanks to [Tsoding Daily](https://www.youtube.com/@TsodingDaily) for inspiring this project.Great programmer and check out his [youtube](https://www.youtube.com/@TsodingDaily) and [github account](https://github.com/tsoding).
+And thank you shaojintian for your [README template](https://github.com/shaojintian/Best_README_template)
 
 <!-- links -->
-[your-project-path]:BaiQiuxin/Timer-Player
+[your-project-path]:https://github.com/BaiQiuxin/Timer-Player
 [contributors-shield]: https://img.shields.io/github/contributors/BaiQiuxin/Timer-Player.svg?style=flat-square
 [contributors-url]: https://github.com/BaiQiuxin/Timer-Player/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/BaiQiuxin/Timer-Player.svg?style=flat-square
@@ -156,4 +140,4 @@ xxx@xxxx
 [license-shield]: https://img.shields.io/github/license/BaiQiuxin/Timer-Player.svg?style=flat-square
 [license-url]: https://github.com/BaiQiuxin/Timer-Player/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/shaojintian
+[linkedin-url]: https://linkedin.com/
