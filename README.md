@@ -5,7 +5,6 @@ Timer and local music player
 
 <!-- PROJECT SHIELDS -->
 
-[![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
@@ -74,25 +73,23 @@ eg:
 
 ```sh
 
-filetree 
-├── LICENSE
-├── README.md
-├── player.py
-├── initialize.py
-├── /data/
-│   ├── /song/
-│   │   ├── song1.mp3
-│   │   └── song2.mp3
-│   └── /thumbnail
-│       ├── song1.png
-│       └── song2.png
-├── run.bat
-├── timer_text.txt
-├── player.ini
-├── .gitignore
-└── images
-    └── logo.png
-
+MusicPlayer
+├─ initialize.py
+├─ LICENSE
+├─ player.ini
+├─ player.py
+├─ README.md
+├─ run.bat
+├─ timer_text.txt
+├─ images
+│  └─ logo.png
+└─ data
+   ├─ thumbnail
+   │  ├─ song1.png
+   │  └─ song2.png
+   └─ song
+      ├─ song1.mp3
+      └─ song2.mp3
 
 ```
 
@@ -124,19 +121,16 @@ This project is licensed under the MIT License, check [LICENSE](https://github.c
 
 ### Acknowledgments
 
-Sincere thanks to [Tsoding Daily](https://www.youtube.com/@TsodingDaily) for inspiring this project.Great programmer and check out his [youtube](https://www.youtube.com/@TsodingDaily) and [github account](https://github.com/tsoding).
-And thank you shaojintian for your [README template](https://github.com/shaojintian/Best_README_template)
+Sincere thanks to [Tsoding Daily](https://www.youtube.com/@TsodingDaily) for inspiring this project.He's a great programmer and please make sure to check out his [youtube](https://www.youtube.com/@TsodingDaily) and [github account](https://github.com/tsoding).
+And thanks shaojintian for this [README template](https://github.com/shaojintian/Best_README_template)
 
 <!-- links -->
-[your-project-path]:https://github.com/BaiQiuxin/Timer-Player
-[contributors-shield]: https://img.shields.io/github/contributors/BaiQiuxin/Timer-Player.svg?style=flat-square
-[contributors-url]: https://github.com/BaiQiuxin/Timer-Player/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/BaiQiuxin/Timer-Player.svg?style=flat-square
 [forks-url]: https://github.com/BaiQiuxin/Timer-Player/network/members
 [stars-shield]: https://img.shields.io/github/stars/BaiQiuxin/Timer-Player.svg?style=flat-square
 [stars-url]: https://github.com/BaiQiuxin/Timer-Player/stargazers
 [issues-shield]: https://img.shields.io/github/issues/BaiQiuxin/Timer-Player.svg?style=flat-square
-[issues-url]: https://img.shields.io/github/issues/BaiQiuxin/Timer-Player.svg
+[issues-url]: https://github.com/BaiQiuxin/Timer-Player/issues
 [license-shield]: https://img.shields.io/github/license/BaiQiuxin/Timer-Player.svg?style=flat-square
 [license-url]: https://github.com/BaiQiuxin/Timer-Player/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
