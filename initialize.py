@@ -20,7 +20,8 @@ AUDIO_EXTENSIONS = {".flac"}
 
 
 def extract_cover(flac_file: Path, album_dir: Path) -> str:
-    """Extract embedded cover art from FLAC and save as PNG in album_dir.
+    """
+    Extract embedded cover art from FLAC and save as PNG in album_dir.
     Returns the path to the saved cover image, or empty string on failure.
     """
     try:
@@ -51,7 +52,8 @@ def extract_cover(flac_file: Path, album_dir: Path) -> str:
 
 
 def scan_audio_files(directory: str) -> list[dict]:
-    """Scan the given directory for .flac files and extract song info
+    """
+    Scan the given directory for .flac files and extract song info
     from metadata tags and embedded cover art.
     """
     audio_dir = Path(directory)
